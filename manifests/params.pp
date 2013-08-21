@@ -22,7 +22,6 @@ class dashboard::params {
   $dashboard_site        = $::fqdn
   $dashboard_port        = '8080'
   $passenger             = false
-  $mysql_root_pw         = 'changemetoo'
   $rails_base_uri        = '/'
   $rack_version          = '1.1.2'
 
