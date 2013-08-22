@@ -25,6 +25,7 @@ class dashboard::params {
   $rails_base_uri        = '/'
   $rack_version          = '1.1.2'
   $dashboard_service     = ['puppet-dashboard','puppet-dashboard-workers']
+  $dashboard_num_workers = $::processorcount
 
   case $::osfamily {
 
