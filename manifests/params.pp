@@ -25,25 +25,26 @@ class dashboard::params {
   $mysql_root_pw         = 'changemetoo'
   $rails_base_uri        = '/'
   $rack_version          = '1.1.2'
+  $dashboard_service     = ['puppet-dashboard','puppet-dashboard-workers']
 
   case $::osfamily {
 
     'RedHat': {
-      $dashboard_config       = '/etc/sysconfig/puppet-dashboard'
-      $dashboard_service      = ['puppet-dashboard','puppet-dashboard-workers']
-      $dashboard_package      = 'puppet-dashboard'
-      $dashboard_root         = '/usr/share/puppet-dashboard'
-      $mysql_package_provider = 'yum'
-      $ruby_mysql_package     = 'ruby-mysql'
+      $dashboard_config         = '/etc/sysconfig/puppet-dashboard'
+      $dashboard_worker_config  = '/etc/sysconfig/puppet-dashboard-workers'
+      $dashboard_package        = 'puppet-dashboard'
+      $dashboard_root           = '/usr/share/puppet-dashboard'
+      $mysql_package_provider   = 'yum'
+      $ruby_mysql_package       = 'ruby-mysql'
     }
 
     'Debian': {
-      $dashboard_config       = '/etc/default/puppet-dashboard'
-      $dashboard_service      = 'puppet-dashboard'
-      $dashboard_package      = 'puppet-dashboard'
-      $dashboard_root         = '/usr/share/puppet-dashboard'
-      $mysql_package_provider = 'aptitude'
-      $ruby_mysql_package     = 'libmysql-ruby1.8'
+      $dashboard_config         = '/etc/default/puppet-dashboard'
+      $dashboard_worker_config  = '/etc/default/puppet-dashboard-workers'
+      $dashboard_package        = 'puppet-dashboard'
+      $dashboard_root           = '/usr/share/puppet-dashboard'
+      $mysql_package_provider   = 'aptitude'
+      $ruby_mysql_package       = 'libmysql-ruby1.8'
     }
 
     default: {

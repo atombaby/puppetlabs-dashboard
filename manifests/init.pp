@@ -29,6 +29,14 @@
 #   [*dashboard_port*]
 #     - The port on which puppet-dashboard should run
 #
+#   [*dashboard_worker_config*]
+#     - Path to configuration file for the delayed job
+#       workers
+#
+#   [*dashboard_num_workers*]
+#     - Number of delayed job workers to start- defaults
+#       to the number of processors on the system
+#
 #   [*mysql_root_pw*]
 #     - Password for root on MySQL
 #
@@ -87,6 +95,8 @@ class dashboard (
   $dashboard_site           = $dashboard::params::dashboard_site,
   $dashboard_port           = $dashboard::params::dashboard_port,
   $dashboard_config         = $dashboard::params::dashboard_config,
+  $dashboard_worker_config  = $dashboard::params::dashboard_worker_config,
+  $dashboard_num_workers    = $dashboard::params::dashboard_num_workers,
   $mysql_root_pw            = $dashboard::params::mysql_root_pw,
   $passenger                = $dashboard::params::passenger,
   $mysql_package_provider   = $dashboard::params::mysql_package_provider,
@@ -112,17 +122,12 @@ class dashboard (
       dashboard_config => $dashboard_config,
       dashboard_root   => $dashboard_root,
     }
-  } else {
-    file { 'dashboard_config':
-      ensure  => present,
-      path    => $dashboard_config,
-      content => template("dashboard/config.${::osfamily}.erb"),
-      owner   => '0',
-      group   => '0',
-      mode    => '0644',
-      require => Package[$dashboard_package],
+    service { $dashboard_service:
+      ensure     => false,
+      enable     => false,
+      hasrestart => true,
     }
-
+  } else {
     service { $dashboard_service:
       ensure     => running,
       enable     => true,
@@ -130,6 +135,26 @@ class dashboard (
       subscribe  => File['/etc/puppet-dashboard/database.yml'],
       require    => Exec['db-migrate']
     }
+  }
+
+  file { 'dashboard_config':
+    ensure  => present,
+    path    => $dashboard_config,
+    content => template("dashboard/config.${::osfamily}.erb"),
+    owner   => '0',
+    group   => '0',
+    mode    => '0644',
+    require => Package[$dashboard_package],
+  }
+
+  file { 'dashboard_worker_config':
+    ensure  => present,
+    path    => $dashboard_worker_config,
+    content => template("dashboard/dashboard_worker_config.erb"),
+    owner   => '0',
+    group   => '0',
+    mode    => '0644',
+    require => Package[$dashboard_package],
   }
 
   package { $dashboard_package:
