@@ -24,7 +24,7 @@ class dashboard::params {
   $passenger                = false
   $rails_base_uri           = '/'
   $rack_version             = '1.1.2'
-  $dashboard_num_workers    = $::processorcount,
+  $dashboard_num_workers    = $::processorcount
   $dashboard_service        = [
                                 'puppet-dashboard',
                                 'puppet-dashboard-workers'
