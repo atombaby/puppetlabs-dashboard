@@ -119,16 +119,6 @@ class dashboard (
       rails_base_uri                  => $rails_base_uri,
     }
   } else {
-    file { 'dashboard_config':
-      ensure  => present,
-      path    => $dashboard_config,
-      content => template("dashboard/config.${::osfamily}.erb"),
-      owner   => '0',
-      group   => '0',
-      mode    => '0644',
-      require => Package[$dashboard_package],
-    }
-
     service { $dashboard_service:
       ensure     => running,
       enable     => true,
@@ -136,6 +126,16 @@ class dashboard (
       subscribe  => File['/etc/puppet-dashboard/database.yml'],
       require    => Exec['db-migrate']
     }
+  }
+
+  file { 'dashboard_config':
+    ensure  => present,
+    path    => $dashboard_config,
+    content => template("dashboard/config.${::osfamily}.erb"),
+    owner   => '0',
+    group   => '0',
+    mode    => '0644',
+    require => Package[$dashboard_package],
   }
 
   file { 'dashboard_worker_config':
