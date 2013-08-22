@@ -91,6 +91,8 @@ class dashboard (
   $dashboard_site           = $dashboard::params::dashboard_site,
   $dashboard_port           = $dashboard::params::dashboard_port,
   $dashboard_config         = $dashboard::params::dashboard_config,
+  $dashboard_worker_config  = $dashboard::params::dashboard_worker_config,
+  $dashboard_num_workers    = $dashboard::params::dashboard_num_workers,
   $mysql_root_pw            = $dashboard::params::mysql_root_pw,
   $passenger                = $dashboard::params::passenger,
   $mysql_package_provider   = $dashboard::params::mysql_package_provider,
@@ -110,11 +112,11 @@ class dashboard (
 
   if $passenger {
     class { 'dashboard::passenger':
-      dashboard_site   => $dashboard_site,
-      dashboard_port   => $dashboard_port,
-      dashboard_config => $dashboard_config,
-      dashboard_root   => $dashboard_root,
-      rails_base_uri   => $rails_base_uri,
+      dashboard_site                  => $dashboard_site,
+      dashboard_port                  => $dashboard_port,
+      dashboard_config                => $dashboard_config,
+      dashboard_root                  => $dashboard_root,
+      rails_base_uri                  => $rails_base_uri,
     }
   } else {
     file { 'dashboard_config':
@@ -134,6 +136,16 @@ class dashboard (
       subscribe  => File['/etc/puppet-dashboard/database.yml'],
       require    => Exec['db-migrate']
     }
+  }
+
+  file { 'dashboard_worker_config':
+    ensure  => present,
+    path    => $dashboard_worker_config,
+    content => template("dashboard/dashboard_worker_config.erb"),
+    owner   => '0',
+    group   => '0',
+    mode    => '0644',
+    require => Package[$dashboard_package],
   }
 
   package { $dashboard_package:
